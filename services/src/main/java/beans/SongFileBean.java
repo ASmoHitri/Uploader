@@ -70,6 +70,17 @@ public class SongFileBean {
         return songFile;
     }
 
+    public boolean removeSong(SongFile songFile) {
+        File file = new File(songFile.getFilePath() + songFile.getFileName());
+        removeFromDB(songFile);
+        if (!file.delete()) {
+            saveToDB(songFile);
+            LOG.error("Could not remove song file.");
+            return false;
+        }
+        return true;
+    }
+
     public SongFile getSong(Integer songId) {
         return entityManager.find(SongFile.class, songId);
     }

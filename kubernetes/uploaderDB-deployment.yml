@@ -1,0 +1,42 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: uploaderDB-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: uploader-db
+  template:
+    metadata:
+      labels:
+        app: uploader-db
+    spec:
+      containers:
+      - image: postgres
+        name: postgres
+        env:
+        - name: POSTGRES_USER
+          value: postgres
+        - name: POSTGRES_PASSWORD
+          value: postgres
+        - name: POSTGRES_DB
+          value: streaming
+        ports:
+        - containerPort: 5432
+          protocol: TCP
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: uploader-db
+spec:
+  type: ClusterIP
+  selector:
+      app: uploader-db
+  ports:
+  - protocol: TCP
+    port: 5433
+    targetPort: 5432

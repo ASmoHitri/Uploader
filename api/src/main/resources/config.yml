@@ -27,6 +27,11 @@ kumuluzee:
           threshold: 50000000
         etcd-health-check:
           connection-url: http://192.168.99.100:2379/health
+  metrics:
+      web-instrumentation:
+      - name: uploader-endpoint
+        url-pattern: /api/v1/*
+        status-codes: 500
 
 service:
   os: windows

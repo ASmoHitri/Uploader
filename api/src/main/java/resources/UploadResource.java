@@ -2,7 +2,9 @@ package resources;
 
 import beans.SongFileBean;
 import com.kumuluz.ee.logs.cdi.Log;
+import configs.AppConfigs;
 import entities.SongFile;
+import helpers.FileHelpers;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
@@ -19,6 +21,22 @@ public class UploadResource {
     @Inject
     private SongFileBean songBean;
 
+    @Inject
+    private AppConfigs appConfigs;
+
+    @GET
+    @Path("{id}")
+    public Response getSongLocation(@PathParam("id") Integer songId) {
+        SongFile songFile = songBean.getSong(songId);
+        if (songFile == null) {
+            return  Response.status(Response.Status.NOT_FOUND).build();
+        }
+        if (appConfigs.getOs().equals("linux")) {
+            songFile.setFilePath(FileHelpers.removeRootDirName(songFile.getFilePath()));
+        }
+        return Response.ok(songFile).build();
+    }
+
     @POST
     @Path("{id}")
     @Consumes(MediaType.APPLICATION_OCTET_STREAM)
@@ -33,5 +51,20 @@ public class UploadResource {
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
         }
         return Response.ok(songFile).build();
+    }
+
+    @DELETE
+    @Path("{id}")
+    public Response removeFile(@PathParam("id") Integer songId) {
+        SongFile songFile = songBean.getSong(songId);
+        if(songFile == null) {
+            return Response.status(Response.Status.BAD_REQUEST).build();
+        }
+
+        Boolean removed = songBean.removeSong(songFile);
+        if (!removed) {
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
+        }
+        return Response.status(Response.Status.NO_CONTENT).build();
     }
 }
