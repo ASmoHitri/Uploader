@@ -9,12 +9,11 @@ public class SongFile {
     @Id
     private Integer songId;
 
-    @Column(name = "file_name",nullable = false)
+    @Column(name = "file_name", nullable = false)
     private String fileName;
 
-    @Column(name = "file_path",nullable = false)
+    @Column(name = "file_path", nullable = false)
     private String filePath;
-
 
     public Integer getSongId() {
         return songId;
