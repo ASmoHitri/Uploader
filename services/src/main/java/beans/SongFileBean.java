@@ -6,6 +6,7 @@ import configs.AppConfigs;
 import entities.SongFile;
 import helpers.FileHelpers;
 import helpers.TransactionsHandler;
+import org.apache.logging.log4j.core.util.IOUtils;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
@@ -110,5 +111,29 @@ public class SongFileBean {
         } catch (Exception e) {
             TransactionsHandler.rollbackTx(entityManager);
         }
+    }
+
+    public byte[] getSongFile(String path) {
+        File file = new File(path);
+        if (!file.exists()) {
+            System.out.println("Song with given path does not exists.");
+            return null;
+        }
+        byte[] bytesArray = null;
+        try {
+//            InputStream inputStream = new FileInputStream(file);
+//            OutputStream outputStream = new ByteArrayOutputStream();
+////            IOUtils.copy(inputStream, outputStream);
+//            inputStream.close();
+            bytesArray = new byte[(int) file.length()];
+            FileInputStream fis = new FileInputStream(file);
+            fis.read(bytesArray); //read file into bytes[]
+            fis.close();
+        } catch (IOException exception) {
+            exception.printStackTrace();
+        }
+
+        return bytesArray;
+
     }
 }
